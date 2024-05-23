@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <style>
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #192a32;
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .turn-indicator {
+            font-size: 1.5rem;
+            color: #31c4be;
+        }
+
+        .reset-button {
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 5px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            background-color: #1f3540;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background-color 0.3s;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .cell:hover {
+            background-color: #444;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .overlay-content {
+            background-color: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .winner-message {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #32a1a0;
+        }
+
+        .overlay-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .overlay-button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            margin: 5px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .overlay-button:nth-child(1) {
+            background-color: #a2b8c3;
+            color: #000;
+            font-weight: 500;
+        }
+
+        .overlay-button:nth-child(2) {
+            background-color: #f2b237;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .overlay.show {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .scoreboard {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.2rem;
+        }
+
+        .cross-line {
+            position: absolute;
+            width: 6px;
+            height: 306px;
+            background-color: #ffd700;
+            transform: rotate(45deg);
+            top: 50%;
+            left: 50%;
+            transform-origin: 50% 50%;
+            visibility: hidden;
+        }
+
+        .horizontal {
+            width: 306px;
+            height: 6px;
+            background-color: #ffd700;
+        }
+
+        .vertical {
+            width: 6px;
+            height: 306px;
+            background-color: #ffd700;
+        }
+
+        .diagonal-1 {
+            width: 6px;
+            height: 306px;
+            background-color: #ffd700;
+            transform: rotate(45deg);
+            transform-origin: 0% 100%;
+        }
+
+        .diagonal-2 {
+            width: 6px;
+            height: 306px;
+            background-color: #ffd700;
+            transform: rotate(-45deg);
+            transform-origin: 100% 100%;
+        }
+
+        .result-cards1 {
+            padding: 7px;
+            border-radius: 5px;
+            background-color: #31c4be;
+        }
+
+        .result-cards2 {
+            padding: 7px;
+            border-radius: 5px;
+            background-color: #a8bec9;
+        }
+
+        .result-cards3 {
+            padding: 7px;
+            border-radius: 5px;
+            background-color: #f2b237;
+        }
+    </style>
+
+</head>
+<body>
+
+    <div class="container">
+        <div class="game-header">
+            <div class="turn-indicator" id="turnIndicator">X's Turn</div>
+            <button id="reset" class="reset-button">↻</button>
+        </div>
+        <div class="board">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
+        <div class="overlay" id="overlay">
+            <div class="overlay-content">
+                <p class="winner-message" id="winnerMessage"></p>
+                <div class="overlay-buttons">
+                    <button id="quit" class="overlay-button">Quit</button>
+                    <button id="nextRound" class="overlay-button">Next Round</button>
+                </div>
+            </div>
+        </div>
+        <div class="scoreboard">
+            <div class="result-cards1">X Wins: <span id="xWins">0</span></div>
+            <div class="result-cards2">O Wins: <span id="oWins">0</span></div>
+            <div class="result-cards3">Draws: <span id="draws">0</span></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const cells = document.querySelectorAll(".cell");
+            const messageElement = document.getElementById("message");
+            const resetButton = document.getElementById("reset");
+            const turnIndicator = document.getElementById("turnIndicator");
+            const overlay = document.getElementById("overlay");
+            const winnerMessage = document.getElementById("winnerMessage");
+            const quitButton = document.getElementById("quit");
+            const nextRoundButton = document.getElementById("nextRound");
+            const xWinsElement = document.getElementById("xWins");
+            const oWinsElement = document.getElementById("oWins");
+            const drawsElement = document.getElementById("draws");
+    
+            let currentPlayer = "X";
+            let gameActive = true;
+            let gameState = ["", "", "", "", "", "", "", "", ""];
+            let xWins = 0;
+            let oWins = 0;
+            let draws = 0;
+    
+            const winningConditions = [
+                [0, 1, 2],
+                [3, 4, 5],
+                [6, 7, 8],
+                [0, 3, 6],
+                [1, 4, 7],
+                [2, 5, 8],
+                [0, 4, 8],
+                [2, 4, 6],
+            ];
+    
+            const handleCellPlayed = (clickedCell, clickedCellIndex) => {
+                gameState[clickedCellIndex] = currentPlayer;
+                clickedCell.innerText = currentPlayer;
+                clickedCell.style.color = currentPlayer === "X" ? "#31c4be" : "#f3b238";
+                clickedCell.style.fontWeight = "bold";
+            };
+    
+            const handlePlayerChange = () => {
+                currentPlayer = currentPlayer === "X" ? "O" : "X";
+                turnIndicator.innerText = `${currentPlayer}'s Turn`;
+                if (currentPlayer === "X") {
+                    turnIndicator.style.color = "#31c4be";
+                } else {
+                    turnIndicator.style.color = "#f3b238";
+                    setTimeout(computerMove, 500);
+                }
+            };
+    
+            const displayCrossLine = (winCondition) => {
+                const board = document.querySelector(".board");
+                const line = document.createElement("div");
+                line.classList.add("cross-line");
+    
+                const [a, b, c] = winCondition;
+                const rowA = Math.floor(a / 3);
+                const rowC = Math.floor(c / 3);
+                const colA = a % 3;
+                const colC = c % 3;
+    
+                if (rowA === rowC) {
+                    line.style.width = "306px";
+                    line.style.height = "6px";
+                    line.style.transform = `translateY(${rowA * 100 + 50}px)`;
+                } else if (colA === colC) {
+                    line.style.width = "6px";
+                    line.style.height = "306px";
+                    line.style.transform = `translateX(${colA * 100 + 50}px)`;
+                } else if (a === 0 && c === 8) {
+                    line.classList.add("diagonal-1");
+                    line.style.transform = "rotate(45deg)";
+                } else if (a === 2 && c === 6) {
+                    line.classList.add("diagonal-2");
+                    line.style.transform = "rotate(-45deg)";
+                }
+    
+                board.appendChild(line);
+                setTimeout(() => line.classList.add("show"), 100);
+            };
+    
+            const handleResultValidation = () => {
+                let roundWon = false;
+                for (let i = 0; i < winningConditions.length; i++) {
+                    const winCondition = winningConditions[i];
+                    let a = gameState[winCondition[0]];
+                    let b = gameState[winCondition[1]];
+                    let c = gameState[winCondition[2]];
+                    if (a === "" || b === "" || c === "") {
+                        continue;
+                    }
+                    if (a === b && b === c) {
+                        roundWon = true;
+                        displayCrossLine(winCondition);
+                        break;
+                    }
+                }
+    
+                if (roundWon) {
+                    winnerMessage.innerText = `${currentPlayer} Takes the Round`;
+                    overlay.classList.add("show");
+                    gameActive = false;
+                    if (currentPlayer === "X") {
+                        xWins++;
+                        xWinsElement.innerText = xWins;
+                    } else {
+                        oWins++;
+                        oWinsElement.innerText = oWins;
+                    }
+                    return;
+                }
+    
+                let roundDraw = !gameState.includes("");
+                if (roundDraw) {
+                    winnerMessage.innerText = "Game ended in a draw!";
+                    overlay.classList.add("show");
+                    gameActive = false;
+                    draws++;
+                    drawsElement.innerText = draws;
+                    return;
+                }
+    
+                handlePlayerChange();
+            };
+    
+            const handleCellClick = (event) => {
+                const clickedCell = event.target;
+                const clickedCellIndex = parseInt(clickedCell.getAttribute("data-index"));
+    
+                if (gameState[clickedCellIndex] !== "" || !gameActive || currentPlayer === "O") {
+                    return;
+                }
+    
+                handleCellPlayed(clickedCell, clickedCellIndex);
+                handleResultValidation();
+            };
+    
+            const handleRestartGame = () => {
+                currentPlayer = "X";
+                gameActive = true;
+                gameState = ["", "", "", "", "", "", "", "", ""];
+                turnIndicator.innerText = `${currentPlayer}'s Turn`;
+                cells.forEach((cell) => (cell.innerHTML = ""));
+                overlay.classList.remove("show");
+                document.querySelectorAll(".cross-line").forEach((line) => line.remove());
+            };
+    
+            const computerMove = () => {
+                if (!gameActive) return;
+                const bestMove = findBestMove(gameState);
+                const cell = document.querySelector(`.cell[data-index='${bestMove}']`);
+                handleCellPlayed(cell, bestMove);
+                handleResultValidation();
+            };
+    
+            const findBestMove = (board) => {
+                let bestVal = -Infinity;
+                let bestMove = -1;
+                for (let i = 0; i < board.length; i++) {
+                    if (board[i] === "") {
+                        board[i] = "O";
+                        let moveVal = minimax(board, 0, false);
+                        board[i] = "";
+                        if (moveVal > bestVal) {
+                            bestMove = i;
+                            bestVal = moveVal;
+                        }
+                    }
+                }
+                return bestMove;
+            };
+    
+            const minimax = (board, depth, isMaximizing) => {
+                const score = evaluate(board);
+    
+                if (score === 10) return score - depth;
+                if (score === -10) return score + depth;
+                if (!board.includes("")) return 0;
+    
+                if (isMaximizing) {
+                    let best = -Infinity;
+                    for (let i = 0; i < board.length; i++) {
+                        if (board[i] === "") {
+                            board[i] = "O";
+                            best = Math.max(best, minimax(board, depth + 1, false));
+                            board[i] = "";
+                        }
+                    }
+                    return best;
+                } else {
+                    let best = Infinity;
+                    for (let i = 0; i < board.length; i++) {
+                        if (board[i] === "") {
+                            board[i] = "X";
+                            best = Math.min(best, minimax(board, depth + 1, true));
+                            board[i] = "";
+                        }
+                    }
+                    return best;
+                }
+            };
+    
+            const evaluate = (board) => {
+                for (let i = 0; i < winningConditions.length; i++) {
+                    const [a, b, c] = winningConditions[i];
+                    if (board[a] === board[b] && board[b] === board[c]) {
+                        if (board[a] === "O") return 10;
+                        else if (board[a] === "X") return -10;
+                    }
+                }
+                return 0;
+            };
+    
+            cells.forEach((cell) => cell.addEventListener("click", handleCellClick));
+            resetButton.addEventListener("click", handleRestartGame);
+            quitButton.addEventListener("click", () => location.reload());
+            nextRoundButton.addEventListener("click", handleRestartGame);
+        });
+    </script>
+</body>
+</html>
