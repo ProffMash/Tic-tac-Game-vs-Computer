@@ -261,7 +261,7 @@
                 currentPlayer = currentPlayer === "X" ? "O" : "X";
                 turnIndicator.innerText = `${currentPlayer}'s Turn`;
                 turnIndicator.style.color = currentPlayer === "X" ? "#31c4be" : "#f3b238";
-                if (currentPlayer === "O" && gridSize === 3) {
+                if (currentPlayer === "O") {
                     setTimeout(computerMove, 500);
                 }
             };
