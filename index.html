@@ -203,7 +203,7 @@
     </div>
 
     <script>
-        // Select DOM elements
+      // Select DOM elements
 const boardElement = document.getElementById("board");
 const menu = document.getElementById("menu");
 const gameHeader = document.getElementById("game-header");
@@ -312,8 +312,35 @@ const handleCellClick = (event) => {
     const index = event.target.getAttribute("data-index");
     if (!isGameActive || gameState[index]) return;
 
+    // Human player's move
     gameState[index] = currentPlayer;
     event.target.textContent = currentPlayer;
+
+    checkWin();
+
+    if (isGameActive) {
+        currentPlayer = currentPlayer === "X" ? "O" : "X";
+        updateTurnDisplay();
+
+        // Trigger computer's move if it's "O"
+        if (currentPlayer === "O") {
+            setTimeout(computerPlay, 500); // Delay for realism
+        }
+    }
+};
+
+const computerPlay = () => {
+    const emptyCells = gameState
+        .map((cell, index) => (cell === "" ? index : null))
+        .filter((index) => index !== null);
+
+    if (emptyCells.length === 0) return;
+
+    const randomIndex = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+    gameState[randomIndex] = currentPlayer;
+
+    const cellElement = boardElement.querySelector(`[data-index='${randomIndex}']`);
+    cellElement.textContent = currentPlayer;
 
     checkWin();
 
