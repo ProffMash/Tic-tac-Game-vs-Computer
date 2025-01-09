@@ -24,6 +24,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            display: none;
         }
 
         .turn-indicator {
@@ -43,7 +44,6 @@
             display: grid;
             gap: 5px;
             margin-bottom: 20px;
-            position: relative;
         }
 
         .cell {
@@ -77,6 +77,11 @@
             visibility: hidden;
             opacity: 0;
             transition: opacity 0.3s;
+        }
+
+        .overlay.show {
+            visibility: visible;
+            opacity: 1;
         }
 
         .overlay-content {
@@ -118,44 +123,6 @@
             font-weight: 500;
         }
 
-        .overlay.show {
-            visibility: visible;
-            opacity: 1;
-        }
-
-        .scoreboard {
-            margin-top: 20px;
-            display: flex;
-            justify-content: space-between;
-            font-size: 1.2rem;
-        }
-
-        .cross-line {
-            position: absolute;
-            width: 6px;
-            background-color: #ffd700;
-            transform-origin: 50% 50%;
-            visibility: hidden;
-        }
-
-        .result-cards1 {
-            padding: 7px;
-            border-radius: 5px;
-            background-color: #31c4be;
-        }
-
-        .result-cards2 {
-            padding: 7px;
-            border-radius: 5px;
-            background-color: #a8bec9;
-        }
-
-        .result-cards3 {
-            padding: 7px;
-            border-radius: 5px;
-            background-color: #f2b237;
-        }
-
         .menu {
             display: flex;
             flex-direction: column;
@@ -173,6 +140,30 @@
             color: white;
         }
 
+        .scoreboard {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.2rem;
+            display: none;
+        }
+
+        .result-cards {
+            padding: 7px;
+            border-radius: 5px;
+        }
+
+        .result-cards1 {
+            background-color: #31c4be;
+        }
+
+        .result-cards2 {
+            background-color: #a8bec9;
+        }
+
+        .result-cards3 {
+            background-color: #f2b237;
+        }
     </style>
 </head>
 <body>
@@ -181,7 +172,7 @@
             <button id="3x3Button">Play 3x3</button>
             <button id="4x4Button">Play 4x4</button>
         </div>
-        <div class="game-header" style="display: none;">
+        <div class="game-header">
             <div class="turn-indicator" id="turnIndicator">X's Turn</div>
             <button id="reset" class="reset-button">↻</button>
         </div>
@@ -195,15 +186,15 @@
                 </div>
             </div>
         </div>
-        <div class="scoreboard" style="display: none;">
-            <div class="result-cards1">X Wins: <span id="xWins">0</span></div>
-            <div class="result-cards2">O Wins: <span id="oWins">0</span></div>
-            <div class="result-cards3">Draws: <span id="draws">0</span></div>
+        <div class="scoreboard">
+            <div class="result-cards result-cards1">X Wins: <span id="xWins">0</span></div>
+            <div class="result-cards result-cards2">O Wins: <span id="oWins">0</span></div>
+            <div class="result-cards result-cards3">Draws: <span id="draws">0</span></div>
         </div>
     </div>
 
     <script>
-      // Select DOM elements
+        // Select DOM elements
 const boardElement = document.getElementById("board");
 const menu = document.getElementById("menu");
 const gameHeader = document.getElementById("game-header");
